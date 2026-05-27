@@ -1,0 +1,417 @@
+<style>
+*{
+box-sizing:border-box;
+margin:0;
+padding:0;
+}
+
+body{
+background:#fff7fb;
+overflow:hidden;
+}
+
+#root{
+min-height:100vh;
+position:relative;
+overflow:hidden;
+display:flex;
+align-items:center;
+justify-content:center;
+}
+
+#landing{
+display:flex;
+flex-direction:column;
+align-items:center;
+justify-content:center;
+min-height:100vh;
+cursor:pointer;
+user-select:none;
+width:100%;
+}
+
+#nicole-text{
+font-family:'Georgia',serif;
+font-size:68px;
+font-weight:400;
+color:#c47aae;
+letter-spacing:8px;
+white-space:nowrap;
+border-right:3px solid #c47aae;
+overflow:hidden;
+display:inline-block;
+width:0;
+margin:0 auto;
+text-align:center;
+animation:tw 1.8s steps(6,end) 0.5s forwards,blink .75s step-end infinite;
+}
+
+@keyframes tw{
+to{
+width:320px;
+}
+}
+
+@keyframes blink{
+50%{
+border-color:transparent;
+}
+}
+
+#hint{
+font-size:13px;
+color:#c9b8c4;
+letter-spacing:2px;
+margin-top:20px;
+opacity:0;
+animation:fi 1s ease 2.6s forwards;
+}
+
+@keyframes fi{
+to{
+opacity:1;
+}
+}
+
+#scene{
+display:none;
+flex-direction:column;
+align-items:center;
+justify-content:center;
+min-height:100vh;
+width:100%;
+position:relative;
+transition:opacity 1.5s ease;
+}
+
+canvas#bg{
+position:absolute;
+top:0;
+left:0;
+width:100%;
+height:100%;
+pointer-events:none;
+}
+
+#tulip{
+cursor:pointer;
+position:relative;
+z-index:2;
+transition:transform .15s ease;
+}
+
+#tulip:active{
+transform:scale(0.94);
+}
+
+#message{
+margin-top:26px;
+text-align:center;
+z-index:2;
+position:relative;
+}
+
+#msg-text{
+font-family:'Georgia',serif;
+font-size:19px;
+color:#c47aae;
+letter-spacing:.5px;
+white-space:nowrap;
+overflow:hidden;
+display:inline-block;
+width:0;
+border-right:2px solid #c47aae;
+}
+
+#msg-sub{
+font-size:12px;
+color:#c9b8c4;
+margin-top:10px;
+letter-spacing:2px;
+opacity:0;
+transition:opacity 1.4s;
+}
+
+#click-hint{
+font-size:12px;
+color:#d4bfcc;
+letter-spacing:2px;
+margin-top:12px;
+opacity:0;
+transition:opacity 1s;
+z-index:2;
+position:relative;
+}
+
+#cool-huh{
+position:absolute;
+top:50%;
+left:50%;
+transform:translate(-50%,-50%) scale(0);
+font-family:'Georgia',serif;
+font-size:42px;
+color:#c47aae;
+letter-spacing:5px;
+z-index:50;
+white-space:nowrap;
+opacity:0;
+pointer-events:none;
+transition:all 1s ease;
+}
+</style>
+
+<div id="root">
+
+<div id="landing" onclick="openSurprise()">
+<span id="nicole-text">Nicole</span>
+<p id="hint">tap to open ♡</p>
+</div>
+
+<div id="scene">
+
+<canvas id="bg"></canvas>
+
+<div id="tulip" onclick="tulipClick()">
+
+<svg id="flower-svg" width="120" height="220" viewBox="0 0 120 220" fill="none" xmlns="http://www.w3.org/2000/svg">
+
+<path d="M60 220 C60 180 57 155 55 130"
+stroke="#6daa6a"
+stroke-width="3.5"
+stroke-linecap="round"
+fill="none"/>
+
+<path d="M55 155 C50 148 40 144 33 148 C28 152 30 160 36 162 C42 164 52 160 55 155Z"
+fill="#7eba78"
+opacity=".85"/>
+
+<path d="M65 148 C70 140 80 137 86 142 C91 147 88 155 82 156 C76 157 67 153 65 148Z"
+fill="#7eba78"
+opacity=".8"/>
+
+<path d="M60 130 C48 128 36 118 34 105 C31 89 42 78 53 83 C57 85 59 92 60 100Z"
+fill="#e091bf"/>
+
+<path d="M60 130 C72 128 84 118 86 105 C89 89 78 78 67 83 C63 85 61 92 60 100Z"
+fill="#e091bf"/>
+
+<path d="M60 130 C52 118 50 102 55 90 C59 79 65 76 68 84 C70 91 66 112 60 130Z"
+fill="#f0b8d8"
+opacity=".95"/>
+
+</svg>
+
+</div>
+
+<div id="message">
+<span id="msg-text"></span>
+<p id="msg-sub">for a pretty filo girl ♡</p>
+</div>
+
+<p id="click-hint">tap flower 3 times ♡</p>
+
+<span id="cool-huh">cool huh ♡</span>
+
+</div>
+
+</div>
+
+<script>
+
+var clickCount = 0;
+var exploded = false;
+var petals = [];
+
+var canvas, ctx, W, H;
+
+function initCanvas(){
+
+canvas = document.getElementById('bg');
+
+W = window.innerWidth;
+H = window.innerHeight;
+
+canvas.width = W;
+canvas.height = H;
+
+ctx = canvas.getContext('2d');
+
+}
+
+function spawnPetal(big){
+
+var colors = ['#f0b8d8','#e091bf','#d47aaa','#f9dcee'];
+
+return{
+x:W/2,
+y:H/2,
+r:big ? 12 + Math.random()*14 : 5 + Math.random()*8,
+color:colors[Math.floor(Math.random()*colors.length)],
+vx:(Math.random()-0.5)*(big?12:4),
+vy:-(2+Math.random()*8),
+life:0,
+maxLife:big ? 120 : 70
+};
+
+}
+
+function tick(){
+
+ctx.clearRect(0,0,W,H);
+
+for(var i=petals.length-1;i>=0;i--){
+
+var p = petals[i];
+
+p.life++;
+
+p.x += p.vx;
+p.y += p.vy;
+
+p.vy += 0.05;
+
+ctx.globalAlpha = 1 - (p.life/p.maxLife);
+
+ctx.beginPath();
+
+ctx.fillStyle = p.color;
+
+ctx.ellipse(p.x,p.y,p.r,p.r*1.6,0,0,Math.PI*2);
+
+ctx.fill();
+
+if(p.life >= p.maxLife){
+
+petals.splice(i,1);
+
+}
+
+}
+
+requestAnimationFrame(tick);
+
+}
+
+function typeMsg(){
+
+var full = "I'm here, don't be angry anymore";
+
+var el = document.getElementById('msg-text');
+
+var i = 0;
+
+(function step(){
+
+if(i <= full.length){
+
+el.textContent = full.slice(0,i);
+
+el.style.width = (i*11)+'px';
+
+i++;
+
+setTimeout(step,55);
+
+}else{
+
+document.getElementById('msg-sub').style.opacity='1';
+
+setTimeout(function(){
+
+document.getElementById('click-hint').style.opacity='1';
+
+},700);
+
+}
+
+})();
+
+}
+
+function openSurprise(){
+
+document.getElementById('landing').style.display='none';
+
+document.getElementById('scene').style.display='flex';
+
+initCanvas();
+
+tick();
+
+setTimeout(typeMsg,500);
+
+}
+
+function tulipClick(){
+
+if(exploded)return;
+
+clickCount++;
+
+var svg = document.getElementById('flower-svg');
+
+svg.style.transform='scale(1.1)';
+
+setTimeout(function(){
+
+svg.style.transform='scale(1)';
+
+},150);
+
+for(var i=0;i<18;i++){
+
+petals.push(spawnPetal(false));
+
+}
+
+if(clickCount >= 3){
+
+explodeScene();
+
+}
+
+}
+
+function explodeScene(){
+
+exploded = true;
+
+for(var i=0;i<140;i++){
+
+petals.push(spawnPetal(true));
+
+}
+
+setTimeout(function(){
+
+document.getElementById('tulip').style.opacity='0';
+
+document.getElementById('message').style.opacity='0';
+
+document.getElementById('click-hint').style.opacity='0';
+
+},1200);
+
+setTimeout(function(){
+
+document.getElementById('scene').style.background='transparent';
+
+var cool = document.getElementById('cool-huh');
+
+cool.style.opacity='1';
+
+cool.style.transform='translate(-50%,-50%) scale(1)';
+
+},2200);
+
+}
+
+</script>
+</div>
+
+<script>
+/* YOUR FULL JS HERE (paste your script inside) */
+</script>
+
+</body>
+</html>
