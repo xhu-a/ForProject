@@ -1,417 +1,340 @@
+
 <style>
-*{
-box-sizing:border-box;
-margin:0;
-padding:0;
-}
+  @import url('https://fonts.googleapis.com/css2?family=Pacifico&family=Nunito:wght@400;700;900&display=swap');
 
-body{
-background:#fff7fb;
-overflow:hidden;
-}
+  * { box-sizing: border-box; margin: 0; padding: 0; }
 
-#root{
-min-height:100vh;
-position:relative;
-overflow:hidden;
-display:flex;
-align-items:center;
-justify-content:center;
-}
+  #app {
+    min-height: 620px;
+    background: #ff6b9d;
+    background-image:
+      radial-gradient(circle at 20% 30%, #ff8fab 0%, transparent 50%),
+      radial-gradient(circle at 80% 70%, #ff4081 0%, transparent 50%),
+      radial-gradient(circle at 50% 10%, #ffb3c6 0%, transparent 40%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Nunito', sans-serif;
+    position: relative;
+    overflow: hidden;
+    padding: 40px 20px;
+  }
 
-#landing{
-display:flex;
-flex-direction:column;
-align-items:center;
-justify-content:center;
-min-height:100vh;
-cursor:pointer;
-user-select:none;
-width:100%;
-}
+  .floaty {
+    position: absolute;
+    animation: floatUp linear infinite;
+    opacity: 0;
+    font-size: 22px;
+    pointer-events: none;
+  }
 
-#nicole-text{
-font-family:'Georgia',serif;
-font-size:68px;
-font-weight:400;
-color:#c47aae;
-letter-spacing:8px;
-white-space:nowrap;
-border-right:3px solid #c47aae;
-overflow:hidden;
-display:inline-block;
-width:0;
-margin:0 auto;
-text-align:center;
-animation:tw 1.8s steps(6,end) 0.5s forwards,blink .75s step-end infinite;
-}
+  @keyframes floatUp {
+    0%   { transform: translateY(100%) rotate(0deg); opacity: 0; }
+    10%  { opacity: 0.8; }
+    90%  { opacity: 0.8; }
+    100% { transform: translateY(-120%) rotate(15deg); opacity: 0; }
+  }
 
-@keyframes tw{
-to{
-width:320px;
-}
-}
+  #screen1 {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+    text-align: center;
+    z-index: 10;
+  }
 
-@keyframes blink{
-50%{
-border-color:transparent;
-}
-}
+  .for-tag {
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    color: #fff;
+    opacity: 0.85;
+  }
 
-#hint{
-font-size:13px;
-color:#c9b8c4;
-letter-spacing:2px;
-margin-top:20px;
-opacity:0;
-animation:fi 1s ease 2.6s forwards;
-}
+  #typewriter-wrap {
+    font-family: 'Pacifico', cursive;
+    font-size: 48px;
+    color: #fff;
+    text-shadow: 3px 3px 0px #c0004a, 5px 5px 0px rgba(0,0,0,0.1);
+    min-height: 70px;
+    display: flex;
+    align-items: center;
+  }
 
-@keyframes fi{
-to{
-opacity:1;
-}
-}
+  #cursor {
+    display: inline-block;
+    width: 4px;
+    height: 48px;
+    background: #fff;
+    margin-left: 4px;
+    border-radius: 2px;
+    animation: blink 0.7s step-end infinite;
+  }
 
-#scene{
-display:none;
-flex-direction:column;
-align-items:center;
-justify-content:center;
-min-height:100vh;
-width:100%;
-position:relative;
-transition:opacity 1.5s ease;
-}
+  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
 
-canvas#bg{
-position:absolute;
-top:0;
-left:0;
-width:100%;
-height:100%;
-pointer-events:none;
-}
+  #click-btn {
+    display: none;
+    margin-top: 10px;
+    padding: 16px 44px;
+    background: #fff;
+    color: #c0004a;
+    border: none;
+    border-radius: 50px;
+    font-size: 17px;
+    font-family: 'Nunito', sans-serif;
+    font-weight: 900;
+    cursor: pointer;
+    animation: bob 1.8s ease-in-out infinite;
+    position: relative;
+  }
 
-#tulip{
-cursor:pointer;
-position:relative;
-z-index:2;
-transition:transform .15s ease;
-}
+  #click-btn::before {
+    content: '';
+    position: absolute;
+    inset: -3px;
+    border-radius: 50px;
+    background: rgba(255,255,255,0.3);
+    animation: ripple 1.8s ease-in-out infinite;
+  }
 
-#tulip:active{
-transform:scale(0.94);
-}
+  @keyframes bob { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-6px)} }
+  @keyframes ripple { 0%,100%{transform:scale(1);opacity:0.4} 50%{transform:scale(1.06);opacity:0} }
 
-#message{
-margin-top:26px;
-text-align:center;
-z-index:2;
-position:relative;
-}
+  #click-btn:hover { background: #ffe0ea; }
 
-#msg-text{
-font-family:'Georgia',serif;
-font-size:19px;
-color:#c47aae;
-letter-spacing:.5px;
-white-space:nowrap;
-overflow:hidden;
-display:inline-block;
-width:0;
-border-right:2px solid #c47aae;
-}
+  #screen2 {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    z-index: 10;
+  }
 
-#msg-sub{
-font-size:12px;
-color:#c9b8c4;
-margin-top:10px;
-letter-spacing:2px;
-opacity:0;
-transition:opacity 1.4s;
-}
+  #present-wrap {
+    position: relative;
+    width: 200px;
+    height: 220px;
+    cursor: pointer;
+  }
 
-#click-hint{
-font-size:12px;
-color:#d4bfcc;
-letter-spacing:2px;
-margin-top:12px;
-opacity:0;
-transition:opacity 1s;
-z-index:2;
-position:relative;
-}
+  .p-box {
+    position: absolute;
+    bottom: 0; left: 20px;
+    width: 160px; height: 140px;
+    background: #fff;
+    border-radius: 6px;
+    border: 3px solid #ffb3c6;
+  }
 
-#cool-huh{
-position:absolute;
-top:50%;
-left:50%;
-transform:translate(-50%,-50%) scale(0);
-font-family:'Georgia',serif;
-font-size:42px;
-color:#c47aae;
-letter-spacing:5px;
-z-index:50;
-white-space:nowrap;
-opacity:0;
-pointer-events:none;
-transition:all 1s ease;
-}
+  .p-stripes {
+    position: absolute;
+    bottom: 0; left: 20px;
+    width: 160px; height: 140px;
+    border-radius: 6px;
+    overflow: hidden;
+    background: repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(255,107,157,0.15) 10px, rgba(255,107,157,0.15) 20px);
+  }
+
+  .p-ribbon-v {
+    position: absolute;
+    bottom: 0; left: 93px;
+    width: 18px; height: 140px;
+    background: #ff6b9d; border-radius: 2px;
+  }
+
+  .p-ribbon-h {
+    position: absolute;
+    bottom: 60px; left: 20px;
+    width: 160px; height: 18px;
+    background: #ff6b9d; border-radius: 2px;
+  }
+
+  .p-lid {
+    position: absolute;
+    bottom: 130px; left: 14px;
+    width: 172px; height: 48px;
+    background: #fff;
+    border-radius: 6px;
+    border: 3px solid #ffb3c6;
+    transition: all 0.7s cubic-bezier(0.34,1.4,0.64,1);
+    transform-origin: center bottom;
+    z-index: 2;
+  }
+
+  .p-lid.open { transform: translateY(-90px) rotate(-20deg) scale(0.9); opacity: 0; }
+
+  .p-lid-ribbon-v { position: absolute; left: 77px; top: 0; width: 18px; height: 48px; background: #ff6b9d; border-radius: 2px; }
+  .p-lid-ribbon-h { position: absolute; left: 0; top: 15px; width: 172px; height: 18px; background: #ff6b9d; border-radius: 2px; }
+
+  .p-bow {
+    position: absolute;
+    top: 4px; left: 50%;
+    transform: translateX(-50%);
+    font-size: 44px;
+    z-index: 3;
+    transition: all 0.7s;
+  }
+
+  .p-bow.open { transform: translateX(-50%) translateY(-100px); opacity: 0; }
+
+  .tap-hint {
+    font-size: 14px; color: #fff; font-weight: 700;
+    letter-spacing: 1px; opacity: 0.9;
+    animation: bob 2s ease-in-out infinite;
+  }
+
+  #screen3 {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    z-index: 10;
+    width: 100%;
+    padding-bottom: 10px;
+  }
+
+  .msg-card {
+    background: #fff;
+    border-radius: 24px;
+    padding: 24px 28px;
+    max-width: 360px;
+    text-align: center;
+    position: relative;
+    border: 3px solid #ffb3c6;
+  }
+
+  .msg-card::before {
+    content: '';
+    position: absolute;
+    inset: -6px;
+    border-radius: 28px;
+    border: 2px dashed rgba(255,255,255,0.5);
+  }
+
+  .msg-name {
+    font-family: 'Pacifico', cursive;
+    font-size: 28px; color: #c0004a; margin-bottom: 12px;
+  }
+
+  .msg-text {
+    font-size: 15px; color: #5a0020; line-height: 1.8; font-weight: 700;
+  }
+
+  .msg-sub {
+    margin-top: 12px; font-size: 13px; color: #d4537e; font-weight: 700; letter-spacing: 1px;
+  }
+
+  #stage {
+    width: 100%;
+    max-width: 480px;
+    height: 120px;
+    position: relative;
+    margin-top: 8px;
+    overflow: hidden;
+  }
+
+  .music-note {
+    position: absolute;
+    font-size: 20px;
+    animation: noteFloat 2s ease-out infinite;
+    opacity: 0;
+  }
+
+  @keyframes noteFloat {
+    0%   { transform: translateY(0) scale(0.5); opacity: 0; }
+    20%  { opacity: 1; }
+    100% { transform: translateY(-80px) scale(1); opacity: 0; }
+  }
 </style>
 
-<div id="root">
+<div id="app">
+
+  <span class="floaty" style="left:6%;animation-duration:6s;animation-delay:0s;">&#10084;&#65039;</span>
+  <span class="floaty" style="left:20%;animation-duration:8s;animation-delay:1.2s;">&#128149;</span>
+  <span class="floaty" style="left:38%;animation-duration:7s;animation-delay:2s;">&#10084;&#65039;</span>
+  <span class="floaty" style="left:55%;animation-duration:5.5s;animation-delay:0.4s;">&#128149;</span>
+  <span class="floaty" style="left:70%;animation-duration:9s;animation-delay:3s;">&#10084;&#65039;</span>
+  <span class="floaty" style="left:85%;animation-duration:6.5s;animation-delay:1.8s;">&#128149;</span>
+  <span class="floaty" style="left:47%;animation-duration:7.5s;animation-delay:4s;">&#10084;&#65039;</span>
+  <span class="floaty" style="left:14%;animation-duration:5s;animation-delay:2.8s;">&#128149;</span>
+
+  <div id="screen1">
+    <div class="for-tag">this is for</div>
+    <div id="typewriter-wrap">
+      <span id="typed"></span><span id="cursor"></span>
+    </div>
+    <button id="click-btn" onclick="goPresent()">click here</button>
+  </div>
+
+  <div id="screen2">
+    <div id="present-wrap" onclick="openGift()">
+      <div class="p-bow" id="bow">&#127873;</div>
+      <div class="p-lid" id="lid">
+        <div class="p-lid-ribbon-v"></div>
+        <div class="p-lid-ribbon-h"></div>
+      </div>
+      <div class="p-box"></div>
+      <div class="p-stripes"></div>
+      <div class="p-ribbon-v"></div>
+      <div class="p-ribbon-h"></div>
+    </div>
+    <div class="tap-hint">tap to open</div>
+  </div>
+
+  <div id="screen3">
+    <div class="msg-card">
+      <div class="msg-name">Rhianna</div>
+      <div class="msg-text">
+        cheer up girl, don't let today mess with you.<br><br>
+        you're way too strong for that — shake it off,
+        take a breath, and remember your real ones
+        are always here for you.
+      </div>
+      <div class="msg-sub">we got you always</div>
+    </div>
+
+    <div id="stage">
+      <span class="music-note" style="left:30%;bottom:80px;animation-delay:0s;">&#9835;</span>
+      <span class="music-note" style="left:55%;bottom:70px;animation-delay:1.2s;">&#9834;</span>
+      <span class="music-note" style="left:70%;bottom:90px;animation-delay:0.6s;">&#9835;</span>
+    </div>
+  </div>
 
-<div id="landing" onclick="openSurprise()">
-<span id="nicole-text">Nicole</span>
-<p id="hint">tap to open ♡</p>
-</div>
-
-<div id="scene">
-
-<canvas id="bg"></canvas>
-
-<div id="tulip" onclick="tulipClick()">
-
-<svg id="flower-svg" width="120" height="220" viewBox="0 0 120 220" fill="none" xmlns="http://www.w3.org/2000/svg">
-
-<path d="M60 220 C60 180 57 155 55 130"
-stroke="#6daa6a"
-stroke-width="3.5"
-stroke-linecap="round"
-fill="none"/>
-
-<path d="M55 155 C50 148 40 144 33 148 C28 152 30 160 36 162 C42 164 52 160 55 155Z"
-fill="#7eba78"
-opacity=".85"/>
-
-<path d="M65 148 C70 140 80 137 86 142 C91 147 88 155 82 156 C76 157 67 153 65 148Z"
-fill="#7eba78"
-opacity=".8"/>
-
-<path d="M60 130 C48 128 36 118 34 105 C31 89 42 78 53 83 C57 85 59 92 60 100Z"
-fill="#e091bf"/>
-
-<path d="M60 130 C72 128 84 118 86 105 C89 89 78 78 67 83 C63 85 61 92 60 100Z"
-fill="#e091bf"/>
-
-<path d="M60 130 C52 118 50 102 55 90 C59 79 65 76 68 84 C70 91 66 112 60 130Z"
-fill="#f0b8d8"
-opacity=".95"/>
-
-</svg>
-
-</div>
-
-<div id="message">
-<span id="msg-text"></span>
-<p id="msg-sub">for a pretty filo girl ♡</p>
-</div>
-
-<p id="click-hint">tap flower 3 times ♡</p>
-
-<span id="cool-huh">cool huh ♡</span>
-
-</div>
-
-</div>
-
-<script>
-
-var clickCount = 0;
-var exploded = false;
-var petals = [];
-
-var canvas, ctx, W, H;
-
-function initCanvas(){
-
-canvas = document.getElementById('bg');
-
-W = window.innerWidth;
-H = window.innerHeight;
-
-canvas.width = W;
-canvas.height = H;
-
-ctx = canvas.getContext('2d');
-
-}
-
-function spawnPetal(big){
-
-var colors = ['#f0b8d8','#e091bf','#d47aaa','#f9dcee'];
-
-return{
-x:W/2,
-y:H/2,
-r:big ? 12 + Math.random()*14 : 5 + Math.random()*8,
-color:colors[Math.floor(Math.random()*colors.length)],
-vx:(Math.random()-0.5)*(big?12:4),
-vy:-(2+Math.random()*8),
-life:0,
-maxLife:big ? 120 : 70
-};
-
-}
-
-function tick(){
-
-ctx.clearRect(0,0,W,H);
-
-for(var i=petals.length-1;i>=0;i--){
-
-var p = petals[i];
-
-p.life++;
-
-p.x += p.vx;
-p.y += p.vy;
-
-p.vy += 0.05;
-
-ctx.globalAlpha = 1 - (p.life/p.maxLife);
-
-ctx.beginPath();
-
-ctx.fillStyle = p.color;
-
-ctx.ellipse(p.x,p.y,p.r,p.r*1.6,0,0,Math.PI*2);
-
-ctx.fill();
-
-if(p.life >= p.maxLife){
-
-petals.splice(i,1);
-
-}
-
-}
-
-requestAnimationFrame(tick);
-
-}
-
-function typeMsg(){
-
-var full = "I'm here, don't be angry anymore";
-
-var el = document.getElementById('msg-text');
-
-var i = 0;
-
-(function step(){
-
-if(i <= full.length){
-
-el.textContent = full.slice(0,i);
-
-el.style.width = (i*11)+'px';
-
-i++;
-
-setTimeout(step,55);
-
-}else{
-
-document.getElementById('msg-sub').style.opacity='1';
-
-setTimeout(function(){
-
-document.getElementById('click-hint').style.opacity='1';
-
-},700);
-
-}
-
-})();
-
-}
-
-function openSurprise(){
-
-document.getElementById('landing').style.display='none';
-
-document.getElementById('scene').style.display='flex';
-
-initCanvas();
-
-tick();
-
-setTimeout(typeMsg,500);
-
-}
-
-function tulipClick(){
-
-if(exploded)return;
-
-clickCount++;
-
-var svg = document.getElementById('flower-svg');
-
-svg.style.transform='scale(1.1)';
-
-setTimeout(function(){
-
-svg.style.transform='scale(1)';
-
-},150);
-
-for(var i=0;i<18;i++){
-
-petals.push(spawnPetal(false));
-
-}
-
-if(clickCount >= 3){
-
-explodeScene();
-
-}
-
-}
-
-function explodeScene(){
-
-exploded = true;
-
-for(var i=0;i<140;i++){
-
-petals.push(spawnPetal(true));
-
-}
-
-setTimeout(function(){
-
-document.getElementById('tulip').style.opacity='0';
-
-document.getElementById('message').style.opacity='0';
-
-document.getElementById('click-hint').style.opacity='0';
-
-},1200);
-
-setTimeout(function(){
-
-document.getElementById('scene').style.background='transparent';
-
-var cool = document.getElementById('cool-huh');
-
-cool.style.opacity='1';
-
-cool.style.transform='translate(-50%,-50%) scale(1)';
-
-},2200);
-
-}
-
-</script>
 </div>
 
 <script>
-/* YOUR FULL JS HERE (paste your script inside) */
-</script>
+  const name = "Rhianna";
+  let idx = 0;
 
-</body>
-</html>
+  function type() {
+    if (idx < name.length) {
+      document.getElementById('typed').textContent += name[idx];
+      idx++;
+      setTimeout(type, Math.random() * 90 + 70);
+    } else {
+      document.getElementById('cursor').style.display = 'none';
+      setTimeout(() => {
+        document.getElementById('click-btn').style.display = 'block';
+      }, 300);
+    }
+  }
+
+  function goPresent() {
+    document.getElementById('screen1').style.display = 'none';
+    document.getElementById('screen2').style.display = 'flex';
+  }
+
+  function openGift() {
+    document.getElementById('lid').classList.add('open');
+    document.getElementById('bow').classList.add('open');
+    setTimeout(() => {
+      document.getElementById('screen2').style.display = 'none';
+      document.getElementById('screen3').style.display = 'flex';
+    }, 700);
+  }
+
+  setTimeout(type, 500);
+</script>
